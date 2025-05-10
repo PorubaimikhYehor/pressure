@@ -4,7 +4,7 @@ let currentUserName = null;
 let googleAuthInstance = null;
 
 // URL вашого Google Apps Script (замініть на ваш реальний URL)
-const SCRIPT_URL = 'YOUR_APPS_SCRIPT_WEB_APP_URL';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXLf6iMfC1TBL9ySjkQaYW7w7dEUV-TFZi4nTLlaLn_cLhtJ1xEWgqCXDW2zx2TyaT/exec';
 
 // Елементи DOM
 const signInButtonContainer = document.getElementById('signInButtonContainer');
