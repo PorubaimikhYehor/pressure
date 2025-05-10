@@ -1,7 +1,8 @@
 // Глобальна змінна для збереження інформації про користувача Google
 let currentUserEmail = null;
 let currentUserName = null;
-let googleAuthInstance = null;
+// `googleAuthInstance` no longer directly used with GIS as it was with gapi.auth2
+// let googleAuthInstance = null; // No longer needed in the same way
 
 // URL вашого Google Apps Script (замініть на ваш реальний URL)
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXLf6iMfC1TBL9ySjkQaYW7w7dEUV-TFZi4nTLlaLn_cLhtJ1xEWgqCXDW2zx2TyaT/exec';
@@ -15,33 +16,70 @@ const statusMessageDiv = document.getElementById('statusMessage');
 const currentYearSpan = document.getElementById('currentYear');
 
 /**
- * Функція, що викликається при успішній авторизації Google.
- * @param {object} googleUser - Об'єкт користувача Google.
+ * Helper function to decode the JWT for client-side UI purposes.
+ * IMPORTANT: The actual verification of the ID token MUST be done on your backend server.
+ * This client-side decode is for displaying user info only.
+ * @param {string} token - The JWT received from Google.
+ * @returns {object|null} Decoded payload or null if invalid.
  */
-function onSignIn(googleUser) {
-    const profile = googleUser.getBasicProfile();
-    currentUserEmail = profile.getEmail();
-    currentUserName = profile.getName();
+function decodeJwtResponse(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error("Error decoding JWT:", e);
+        return null;
+    }
+}
 
-    console.log('Користувач успішно увійшов.');
-    console.log('Email: ' + currentUserEmail);
-    console.log('Ім\'я: ' + currentUserName);
 
-    updateUI(true); // Оновити інтерфейс для авторизованого користувача
+/**
+ * Функція, що викликається при успішній авторизації Google (GIS callback).
+ * @param {CredentialResponse} response - Об'єкт відповіді від Google, що містить JWT.
+ */
+function handleCredentialResponse(response) {
+    if (response.credential) {
+        console.log('Отримано відповідь на авторизацію GIS.');
+        const decodedToken = decodeJwtResponse(response.credential);
+
+        if (decodedToken) {
+            currentUserEmail = decodedToken.email;
+            currentUserName = decodedToken.name; // Or decodedToken.given_name + ' ' + decodedToken.family_name
+
+            console.log('Користувач успішно увійшов (GIS).');
+            console.log('Email: ' + currentUserEmail);
+            console.log('Ім\'я: ' + currentUserName);
+
+            updateUI(true); // Оновити інтерфейс для авторизованого користувача
+        } else {
+            console.error('Не вдалося розкодувати JWT.');
+            statusMessageDiv.textContent = 'Помилка авторизації: недійсний токен.';
+            statusMessageDiv.className = 'mt-6 text-center text-sm text-red-400 min-h-[20px]';
+            updateUI(false);
+        }
+    } else {
+        console.error('Не отримано облікових даних у відповіді GIS.');
+        statusMessageDiv.textContent = 'Помилка авторизації: облікові дані не отримано.';
+        statusMessageDiv.className = 'mt-6 text-center text-sm text-red-400 min-h-[20px]';
+        updateUI(false);
+    }
 }
 
 /**
- * Функція для виходу з системи Google.
+ * Функція для виходу з системи Google (GIS).
  */
 function signOut() {
-    if (googleAuthInstance) {
-        googleAuthInstance.signOut().then(function () {
-            console.log('Користувач вийшов.');
-            currentUserEmail = null;
-            currentUserName = null;
-            updateUI(false); // Оновити інтерфейс для неавторизованого користувача
-        });
-    }
+    // GIS doesn't provide a direct "sign out" function in the same way as gapi.auth2.
+    // `disableAutoSelect` clears the user's session for your app in the browser.
+    google.accounts.id.disableAutoSelect();
+    console.log('Користувач вийшов (GIS).');
+    currentUserEmail = null;
+    currentUserName = null;
+    updateUI(false); // Оновити інтерфейс для неавторизованого користувача
 }
 
 /**
@@ -56,7 +94,16 @@ function updateUI(isSignedIn) {
         pressureForm.style.display = 'block';
         statusMessageDiv.textContent = ''; // Очистити попередні повідомлення
     } else {
-        signInButtonContainer.style.display = 'flex'; // Або 'block'
+        // Display the Google Sign-In button again if signed out
+        signInButtonContainer.style.display = 'flex'; // Or 'block'
+        // Re-render the button if it was dynamically removed/hidden
+        if (typeof google !== 'undefined' && typeof google.accounts !== 'undefined') {
+            google.accounts.id.renderButton(
+                signInButtonContainer, // Your button container
+                { theme: "outline", size: "large" } // Customization options
+            );
+        }
+
         signOutButton.style.display = 'none';
         userInfoDiv.textContent = '';
         pressureForm.style.display = 'none';
@@ -133,63 +180,79 @@ async function handleFormSubmit(event) {
 }
 
 /**
- * Ініціалізація Google Auth клієнта та слухачів подій.
+ * Ініціалізація Google Identity Services (GIS).
+ * Ця функція викликається після завантаження DOM та після завантаження бібліотеки GIS.
  */
-function initializeGoogleAuth() {
-    gapi.load('auth2', function() {
-        // Ініціалізація Google Auth2
-        gapi.auth2.init({
-            client_id: document.querySelector('meta[name="google-signin-client_id"]').content
-        }).then(function (authInstance) {
-            googleAuthInstance = authInstance; // Зберігаємо екземпляр для signOut
-
-            // Слухати зміни статусу авторизації
-            googleAuthInstance.isSignedIn.listen(updateSigninStatus);
-
-            // Обробити початковий статус авторизації
-            updateSigninStatus(googleAuthInstance.isSignedIn.get());
-
-        }).catch(function(error) {
-            console.error("Помилка ініціалізації Google Auth: ", JSON.stringify(error, undefined, 2));
-            statusMessageDiv.textContent = "Помилка ініціалізації Google Автентифікації. Перевірте Client ID.";
-            statusMessageDiv.className = 'mt-6 text-center text-sm text-red-400 min-h-[20px]';
+function initGoogleIdentityServices() {
+    console.log("Ініціалізація Google Identity Services...");
+    try {
+        google.accounts.id.initialize({
+            client_id: document.querySelector('meta[name="google-signin-client_id"]').content,
+            callback: handleCredentialResponse // This callback receives the JWT
         });
-    });
-}
 
-/**
- * Оновлює UI в залежності від статусу авторизації (викликається слухачем).
- * @param {boolean} isSignedIn - Статус авторизації.
- */
-function updateSigninStatus(isSignedIn) {
-    if (isSignedIn) {
-        // Якщо користувач вже увійшов, викликаємо onSignIn для отримання даних профілю
-        onSignIn(googleAuthInstance.currentUser.get());
-    } else {
-        updateUI(false);
+        // Render the "Sign in with Google" button
+        // It will look for an element with the ID 'signInButtonContainer'
+        // and render the button inside it.
+        google.accounts.id.renderButton(
+            signInButtonContainer, // Assuming this is the element where you want the button
+            { theme: "outline", size: "large" } // Customize button appearance
+        );
+
+        // You can also enable One Tap prompt if desired
+        // google.accounts.id.prompt(); // For automatic sign-in prompt
+
+        console.log("Google Identity Services ініціалізовано.");
+        // Initially, update UI to reflect no user signed in.
+        updateUI(false); // Show sign-in button by default
+    } catch (error) {
+        console.error("Помилка ініціалізації Google Identity Services:", error);
+        statusMessageDiv.textContent = "Помилка ініціалізації Google Автентифікації. Перевірте Client ID.";
+        statusMessageDiv.className = 'mt-6 text-center text-sm text-red-400 min-h-[20px]';
     }
 }
 
 
 // Додавання слухачів подій після завантаження DOM
 document.addEventListener('DOMContentLoaded', function() {
-    // Ініціалізація Google Auth відбувається через platform.js,
-    // але ми можемо перевірити стан після завантаження gapi
-    if (typeof gapi !== 'undefined') {
-        initializeGoogleAuth();
-    } else {
-        // Якщо gapi ще не завантажено, platform.js викличе onSignIn автоматично
-        // або можна спробувати завантажити його тут, але async defer має впоратися
-        console.warn("gapi не завантажено при DOMContentLoaded, platform.js має впоратися.");
-    }
-    
     signOutButton.addEventListener('click', signOut);
     pressureForm.addEventListener('submit', handleFormSubmit);
 
     if(currentYearSpan) {
         currentYearSpan.textContent = new Date().getFullYear();
     }
+
+    // `initGoogleIdentityServices` should be called after the GIS client library loads.
+    // The most reliable way is to use `window.onload` or ensure the script is `async defer`
+    // and your custom script is placed after the GIS script in the HTML.
+    // Or, define `initGoogleIdentityServices` globally and use `?onload=initGoogleIdentityServices`
+    // in the GIS script URL, similar to the old platform.js approach.
+    // For simplicity here, let's rely on the GIS script loading and making `google.accounts.id` available
+    // before `DOMContentLoaded` if it's placed correctly with `async defer`.
+    // If not, a slight delay or `window.onload` might be needed if `google` is not yet defined.
+    
+    // It's safer to ensure `google` is defined before calling it,
+    // but typically with `async defer`, it should be.
+    // For this example, assuming the GIS script has loaded.
+    // If you experience "google is undefined", wrap this in window.onload or check for google:
+    // window.onload = initGoogleIdentityServices;
+    // OR:
+    if (typeof google !== 'undefined' && typeof google.accounts !== 'undefined') {
+        initGoogleIdentityServices();
+    } else {
+        console.warn("Google Identity Services library not yet loaded at DOMContentLoaded. This might be a timing issue. Ensure 'https://accounts.google.com/gsi/client' is loaded first or use window.onload.");
+        // Fallback if needed, e.g., a deferred call
+        setTimeout(() => {
+            if (typeof google !== 'undefined' && typeof google.accounts !== 'undefined') {
+                initGoogleIdentityServices();
+            } else {
+                 console.error("Google Identity Services library still not loaded after delay.");
+            }
+        }, 500); // Small delay to check again
+    }
 });
 
-// Важливо: функція onSignIn має бути глобальною, оскільки її викликає бібліотека Google
-window.onSignIn = onSignIn;
+// Important: `handleCredentialResponse` needs to be globally accessible for the GIS library to call it.
+window.handleCredentialResponse = handleCredentialResponse;
+// Also, if you're using `onload` parameter in the GIS script URL, this function needs to be global.
+window.initGoogleIdentityServices = initGoogleIdentityServices;
