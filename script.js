@@ -5,7 +5,7 @@ let currentUserName = null;
 // let googleAuthInstance = null; // No longer needed in the same way
 
 // URL вашого Google Apps Script (замініть на ваш реальний URL)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXLf6iMfC1TBL9ySjkQaYW7w7dEUV-TFZi4nTLlaLn_cLhtJ1xEWgqCXDW2zx2TyaT/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHeFN2RoFI1XCNLPAVBOvzEi8OzttxmsRdEkX6_RGwPSmKUWsotAZJTY_cs9snKET7/exec';
 
 // Елементи DOM
 const signInButtonContainer = document.getElementById('signInButtonContainer');
@@ -127,6 +127,8 @@ async function handleFormSubmit(event) {
     const systolic = document.getElementById('systolic').value;
     const diastolic = document.getElementById('diastolic').value;
     const pulse = document.getElementById('pulse').value;
+    const comment = document.getElementById('comment').value;
+    const datetime = document.getElementById('datetime').value;
 
     // Проста валідація
     if (!systolic || !diastolic) {
@@ -137,9 +139,11 @@ async function handleFormSubmit(event) {
 
     const dataToSend = {
         email: currentUserEmail,
-        systolic: systolic,
-        diastolic: diastolic,
-        pulse: pulse
+        systolic,
+        diastolic,
+        pulse: pulse,
+        comment,
+        timestamp: datetime,
     };
 
     statusMessageDiv.textContent = 'Збереження даних...';
@@ -188,7 +192,8 @@ function initGoogleIdentityServices() {
     try {
         google.accounts.id.initialize({
             client_id: document.querySelector('meta[name="google-signin-client_id"]').content,
-            callback: handleCredentialResponse // This callback receives the JWT
+            callback: handleCredentialResponse, // This callback receives the JWT
+            auto_select: true
         });
 
         // Render the "Sign in with Google" button
@@ -200,7 +205,7 @@ function initGoogleIdentityServices() {
         );
 
         // You can also enable One Tap prompt if desired
-        // google.accounts.id.prompt(); // For automatic sign-in prompt
+        google.accounts.id.prompt(n => console.log(n)); // For automatic sign-in prompt
 
         console.log("Google Identity Services ініціалізовано.");
         // Initially, update UI to reflect no user signed in.
@@ -217,6 +222,8 @@ function initGoogleIdentityServices() {
 document.addEventListener('DOMContentLoaded', function() {
     signOutButton.addEventListener('click', signOut);
     pressureForm.addEventListener('submit', handleFormSubmit);
+
+    document.getElementById('datetime').value = new Date((d = new Date()) && d.setMinutes(d.getMinutes() - d.getTimezoneOffset())).toJSON().substring(0, 16); 
 
     if(currentYearSpan) {
         currentYearSpan.textContent = new Date().getFullYear();

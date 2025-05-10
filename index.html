@@ -28,43 +28,56 @@
     class="bg-gradient-to-br from-slate-900 to-slate-700 text-gray-100 min-h-screen flex flex-col items-center justify-center p-4 selection:bg-sky-500 selection:text-white">
 
     <div class="bg-slate-800 shadow-2xl rounded-xl p-6 md:p-10 w-full max-w-lg">
-        <header class="text-center mb-8">
+        <header class="text-center">
             <h1 class="text-4xl font-bold text-sky-400">Щоденник Тиску</h1>
-            <p class="text-slate-400 mt-2">Записуйте та відстежуйте свої показники</p>
+            <!-- <p class="text-slate-400 mt-2">Записуйте та відстежуйте свої показники</p> -->
         </header>
 
-        <div id="authContainer" class="mb-6 text-center">
+        <div id="authContainer" class="my-6 text-center">
             <div id="signInButtonContainer" class="flex justify-center">
                 <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark" data-width="240" data-height="50"
                     data-longtitle="true"></div>
             </div>
-            <div id="userInfo" class="mt-4 text-slate-300"></div>
-            <button id="signOutButton"
-                class="hidden mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-150 ease-in-out w-full sm:w-auto">
-                Вийти
-            </button>
+            <div class="flex item-center justify-between">
+                <div id="userInfo" class="text-slate-300 m-auto"></div>
+                <button id="signOutButton"
+                    class="hidden bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition duration-150 ease-in-out">
+                    Вийти
+                </button>
+            </div>
         </div>
 
         <form id="pressureForm" class="hidden space-y-6">
-            <div>
-                <label for="systolic" class="block text-sm font-medium text-sky-300 mb-1">Систолічний тиск
-                    (верхнє)</label>
-                <input type="number" id="systolic" name="systolic" required placeholder="напр. 120"
-                    class="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition duration-150 ease-in-out">
+            <div class="flex">
+                <div class="mr-2">
+                    <label for="systolic" class="block text-sm font-medium text-sky-300 mb-1">SIS*</label>
+                    <input type="number" id="systolic" name="systolic" required placeholder="напр. 120"
+                        class="w-full mr-2 px-2 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition duration-150 ease-in-out">
+                </div>
+
+                <div class="mx-2">
+                    <label for="diastolic" class="block text-sm font-medium text-sky-300 mb-1">DIA*</label>
+                    <input type="number" id="diastolic" name="diastolic" required placeholder="напр. 80"
+                        class="w-full px-2 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition duration-150 ease-in-out">
+                </div>
+                <div class="ml-2">
+                    <label for="pulse" class="block text-sm font-medium text-sky-300 mb-1">PUL</label>
+                    <input type="number" id="pulse" name="pulse" placeholder="напр. 70"
+                        class="w-full px-2 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition duration-150 ease-in-out">
+                </div>
             </div>
 
-            <div>
-                <label for="diastolic" class="block text-sm font-medium text-sky-300 mb-1">Діастолічний тиск
-                    (нижнє)</label>
-                <input type="number" id="diastolic" name="diastolic" required placeholder="напр. 80"
-                    class="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition duration-150 ease-in-out">
-            </div>
 
             <div>
-                <label for="pulse" class="block text-sm font-medium text-sky-300 mb-1">Пульс (уд/хв,
-                    необов'язково)</label>
-                <input type="number" id="pulse" name="pulse" placeholder="напр. 70"
-                    class="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition duration-150 ease-in-out">
+                <label for="comment" class="block text-sm font-medium text-sky-300 mb-1"></label>
+                <input type="text" id="comment" name="comment" placeholder="як ся маєш"
+                    
+                class="w-full px-2 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition duration-150 ease-in-out">
+            </div>
+            <div>
+                <label for="datetime" class="block text-sm font-medium text-sky-300 mb-1"></label>
+                <input type="datetime-local" id="datetime" name="datetime" 
+                class="w-full px-2 py-2.5 bg-slate-700 border border-slate-600 rounded-lg text-gray-100 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition duration-150 ease-in-out">
             </div>
 
             <button type="submit"
@@ -84,4 +97,5 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="script.js"></script>
 </body>
+
 </html>
