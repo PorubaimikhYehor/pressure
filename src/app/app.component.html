@@ -1,0 +1,9 @@
+    
+    
+    <ng-container *ngIf="(auth.user() | async) as user; else showLogin">
+      <h3>Welcome, {{ user.displayName }}</h3>
+      <button mat-button (click)="auth.logout()">Logout</button>
+    </ng-container>
+    <ng-template #showLogin>
+      <app-login />
+    </ng-template>
