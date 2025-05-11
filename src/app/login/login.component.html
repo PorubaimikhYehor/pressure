@@ -1,4 +1,14 @@
-    <div class="login-container">
+<mat-card appearance="outlined" class="m-auto w-3xs mt-4">
+    <mat-card-content>Будь ласка, авторизуйтесь, щоб продовжити.</mat-card-content>
+    <mat-card-actions>
+        <button class="w-full" mat-raised-button color="primary" (click)="login()">
+            <span>Sign in with Google</span>
+            <mat-icon>login</mat-icon>
+        </button>
+    </mat-card-actions>
+</mat-card>
+
+<!-- <div class="login-container">
       <h2>Login</h2>
       <button mat-raised-button color="primary" (click)="login()">Sign in with Google</button>
     </div>
@@ -19,7 +29,7 @@
 
 <header class="text-center">
     <h1 class="text-4xl font-bold text-sky-400">Щоденник Тиску</h1>
-    <!-- <p class="text-slate-400 mt-2">Записуйте та відстежуйте свої показники</p> -->
+    <p class="text-slate-400 mt-2">Записуйте та відстежуйте свої показники</p>
 </header>
 
 <div id="authContainer" class="my-6 text-center">
@@ -34,4 +44,4 @@
             Вийти
         </button>
     </div>
-</div>
+</div> -->
