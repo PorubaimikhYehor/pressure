@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MaterialModule } from '../material.module';
 import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core'
 import { Validators } from '@angular/forms';
+import { GoogleTableService } from '../google-table.service';
 
 @Component({
   selector: 'app-pressure-form',
@@ -12,7 +13,7 @@ import { Validators } from '@angular/forms';
   providers: [provideNativeDateAdapter()],
 })
 export class PressureFormComponent {
-
+private googleTable = inject(GoogleTableService);
 
   pressureForm = new FormGroup({
     // email: currentUserEmail,
@@ -27,6 +28,7 @@ export class PressureFormComponent {
 
   submitForm = () => {
     console.log(this.pressureForm.value);
+    this.googleTable.sendData(this.pressureForm.value);
   }
   getCurrentLocalDateTimeString() {
     const d = new Date();
