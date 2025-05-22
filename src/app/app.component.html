@@ -1,0 +1,19 @@
+<mat-toolbar>
+    <span *ngIf="!(auth.user() | async) as user">Щоденник Тиску.</span>
+    <span *ngIf="(auth.user() | async) as user">Hi, {{ user.displayName }}</span>
+    <span class="flex-auto"></span>
+    <button mat-icon-button *ngIf="!(auth.user() | async) as user" (click)="auth.loginWithGoogle()">
+        <mat-icon>login</mat-icon>
+    </button>
+    <button mat-icon-button *ngIf="(auth.user() | async) as user" (click)="auth.logout()">
+        <mat-icon>logout</mat-icon>
+    </button>
+</mat-toolbar>
+
+
+<ng-container *ngIf="(auth.user() | async) as user; else showLogin">
+    <app-pressure-form />
+</ng-container>
+<ng-template #showLogin>
+    <app-login />
+</ng-template>

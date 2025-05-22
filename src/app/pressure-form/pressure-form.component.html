@@ -1,0 +1,57 @@
+<div class="p-4">
+
+    <mat-card appearance="outlined" class="m-auto max-w-lg">
+        <mat-card-content [formGroup]="pressureForm">
+            <section class="flex mb-2">
+                <mat-form-field class="w-full mr-2">
+                    <mat-label>SIS</mat-label>
+                    <input type="number" formControlName="systolic" matInput maxlength="3" placeholder="Ex. 120">
+                </mat-form-field>
+                <mat-form-field class="w-full mx-2">
+                    <mat-label>DIA</mat-label>
+                    <input type="number" formControlName="diastolic" matInput maxlength="3" placeholder="Ex. 80">
+                </mat-form-field>
+                <mat-form-field class="w-full ml-2">
+                    <mat-label>Pulse</mat-label>
+                    <input type="number" formControlName="pulse" matInput maxlength="3" placeholder="Ex. 75">
+                </mat-form-field>
+            </section>
+
+            <section class="flex items-center mb-2">
+                <div class="mr-2 mb-5">
+                    <mat-button-toggle-group formControlName="hand">
+                        <mat-button-toggle value="Left">Left</mat-button-toggle>
+                        <mat-button-toggle value="Right">Right</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+                <mat-form-field class="w-full ml-2">
+                    <mat-label>Time</mat-label>
+                    <input type="datetime-local" matInput formControlName="timestamp">
+                </mat-form-field>
+            </section>
+
+            <section class="flex items-center mb-2">
+                <mat-form-field class="w-full">
+                    <mat-label>Leave a comment</mat-label>
+                    <input formControlName="comment" matInput placeholder="Ex. It makes me feel..." />
+                </mat-form-field>
+            </section>
+
+            <section class="mb-2">
+                <mat-form-field class="w-full">
+                    <mat-label>Feeling</mat-label>
+                    <input matInput class="hidden" value="asdf"/>
+                    <div class="w-full">
+                        <mat-slider  style="width: calc(100% - 16px);" [max]="10" [min]="1" [step]="1" [discrete]="true"
+                            [showTickMarks]="true">
+                            <input matSliderThumb formControlName="feeling">
+                        </mat-slider>
+                    </div>
+                </mat-form-field>
+            </section>
+
+            <button mat-stroked-button class="w-full" (click)="submitForm()" [disabled]="!pressureForm.valid">Save</button>
+        </mat-card-content>
+
+    </mat-card>
+</div>
