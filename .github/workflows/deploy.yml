@@ -2,7 +2,7 @@ name: Build and Deploy to GitHub Pages
 
 on:
   push:
-    branches: [angular]
+    branches: [main]
 
 jobs:
   build-deploy:
