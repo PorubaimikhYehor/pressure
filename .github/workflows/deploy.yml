@@ -34,4 +34,4 @@ jobs:
         run: npm run build -- --configuration=production
 
       - name: 🚀 Deploy to GitHub Pages
-        run: npx angular-cli-ghpages --dir=dist/pressure
+        run: npx angular-cli-ghpages --no-silent --dir=dist/pressure
