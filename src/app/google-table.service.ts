@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { AuthService } from './login/auth.service';
+import { catchError, map, mergeMap, Observable, of, switchMap, take, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -11,15 +12,25 @@ export class GoogleTableService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
 
-  // http.get<Config>('/api/config').subscribe(config => { });
-
   constructor() { }
 
-  sendData(data: any) {
-    console.log(data);
-    this.auth.user().subscribe(user => {
-      data.email = user?.email;
-      this.http.post<any>(this.SCRIPT_URL, JSON.stringify(data)).subscribe(r => { console.log(r) });
-    });
+  sendData(data: any): Observable<string> {
+    return this.auth.user().pipe(
+      take(1),
+      switchMap(user => {
+        data.email = user?.email || 'unknown@example.com';
+        return this.http.post<any>(this.SCRIPT_URL, JSON.stringify(data));
+      }),
+      mergeMap(response => {
+        if (response?.status === "error") {
+          return throwError(() => new Error(response.message || 'Failed to send data. Please try again.'));
+        }
+        return of(response.message || 'Data sent successfully.');
+      }),
+      catchError(err => {
+        return throwError(() => err instanceof Error ? err : new Error('Failed to send data. Please try again.'));
+      })
+    );
   }
+
 }

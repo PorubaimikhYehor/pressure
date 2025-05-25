@@ -11,6 +11,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 // import {MatTimepickerModule} from '@angular/material/timepicker';
 // import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatSliderModule} from '@angular/material/slider';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+
 const materialModules = [
   MatCardModule,
   MatButtonModule,
@@ -21,7 +23,8 @@ const materialModules = [
   MatButtonToggleModule,
   // MatTimepickerModule,
   // MatDatepickerModule,
-  MatSliderModule
+  MatSliderModule,
+  MatSnackBarModule
 ]
 
 
