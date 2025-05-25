@@ -6,10 +6,10 @@ import { MatCardModule } from '@angular/material/card';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatInputModule} from '@angular/material/input';
 import {MatIconModule} from '@angular/material/icon';
-import {MatGridListModule} from '@angular/material/grid-list';
+// import {MatGridListModule} from '@angular/material/grid-list';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
-import {MatTimepickerModule} from '@angular/material/timepicker';
-import {MatDatepickerModule} from '@angular/material/datepicker';
+// import {MatTimepickerModule} from '@angular/material/timepicker';
+// import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatSliderModule} from '@angular/material/slider';
 const materialModules = [
   MatCardModule,
@@ -17,10 +17,10 @@ const materialModules = [
   MatToolbarModule,
   MatInputModule,
   MatIconModule,
-  MatGridListModule,
+  // MatGridListModule,
   MatButtonToggleModule,
-  MatTimepickerModule,
-  MatDatepickerModule,
+  // MatTimepickerModule,
+  // MatDatepickerModule,
   MatSliderModule
 ]
 
