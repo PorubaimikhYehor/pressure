@@ -6,7 +6,7 @@ import { AuthService } from './login/auth.service';
   providedIn: 'root'
 })
 export class GoogleTableService {
-  private SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHeFN2RoFI1XCNLPAVBOvzEi8OzttxmsRdEkX6_RGwPSmKUWsotAZJTY_cs9snKET7/exec';
+  private SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2W9rPJbAF1d8DUaWoCOewlAVKMXPOFGMf1sYuY5n9SwpBFR74RcEl7kplW9ABUNiv/exec';
 
   private http = inject(HttpClient);
   private auth = inject(AuthService);
