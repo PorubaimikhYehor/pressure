@@ -27,7 +27,7 @@ private googleTable = inject(GoogleTableService);
   });
 
   submitForm = () => {
-    console.log(this.pressureForm.value);
+    // console.log(this.pressureForm.value);
     this.googleTable.sendData(this.pressureForm.value);
   }
   getCurrentLocalDateTimeString() {
