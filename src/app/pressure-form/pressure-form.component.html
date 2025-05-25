@@ -25,8 +25,14 @@
                     </mat-button-toggle-group>
                 </div>
                 <mat-form-field class="w-full ml-2">
-                    <mat-label>Time</mat-label>
-                    <input type="datetime-local" matInput formControlName="timestamp">
+                    <mat-label>Feeling</mat-label>
+                    <input matInput class="hidden" value="asdf" />
+                    <div class="w-full">
+                        <mat-slider style="width: calc(100% - 16px);" [max]="10" [min]="1" [step]="1" [discrete]="true"
+                            [showTickMarks]="true">
+                            <input matSliderThumb formControlName="feeling">
+                        </mat-slider>
+                    </div>
                 </mat-form-field>
             </section>
 
@@ -39,18 +45,13 @@
 
             <section class="mb-2">
                 <mat-form-field class="w-full">
-                    <mat-label>Feeling</mat-label>
-                    <input matInput class="hidden" value="asdf"/>
-                    <div class="w-full">
-                        <mat-slider  style="width: calc(100% - 16px);" [max]="10" [min]="1" [step]="1" [discrete]="true"
-                            [showTickMarks]="true">
-                            <input matSliderThumb formControlName="feeling">
-                        </mat-slider>
-                    </div>
+                    <mat-label>Time</mat-label>
+                    <input type="datetime-local" matInput formControlName="timestamp">
                 </mat-form-field>
             </section>
 
-            <button mat-stroked-button class="w-full" (click)="submitForm()" [disabled]="!pressureForm.valid">Save</button>
+            <button mat-stroked-button class="w-full" (click)="submitForm()"
+                [disabled]="!pressureForm.valid">Save</button>
         </mat-card-content>
 
     </mat-card>
